@@ -17,14 +17,15 @@ root.geometry("600x600")
 
 
 
-send_btn = tk.Button(root,text="Отправить")
+
 chat = tk.Text(root,height=30,width=35)
 contact_list = tk.Listbox(root,width=20,height=25)
 contact_list.insert(tk.END,"Пользователь 1","Тони Старк")
 contact_list.bind("<<ListboxSelect>>" , on_contact_select())
-send_at_label = tk.Label(root,text="Выбирете пользователя")
-entry = tk.Entry(root,width=40)
+send_at_label = tk.Label(root,text="Выбирете пользователя")s
 bottom_frame = tk.Frame(root)
+entry = tk.Entry(bottom_frame,width=40)
+send_btn = tk.Button(bottom_frame,text="Отправить")
 
 
 
