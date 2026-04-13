@@ -22,9 +22,9 @@ chat = tk.Text(root,height=30,width=35)
 contact_list = tk.Listbox(root,width=20,height=25)
 contact_list.insert(tk.END,"Пользователь 1","Тони Старк")
 contact_list.bind("<<ListboxSelect>>" , on_contact_select())
-send_at_label = tk.Label(root,text="Выбирете пользователя")s
+send_at_label = tk.Label(root,text="Выбирете пользователя")
 bottom_frame = tk.Frame(root)
-entry = tk.Entry(bottom_frame,width=40)
+entry = tk.Entry(bottom_frame,width=60)
 send_btn = tk.Button(bottom_frame,text="Отправить")
 
 
