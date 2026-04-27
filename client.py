@@ -1,43 +1,23 @@
-import tkinter as tk
-from importlib.metadata import entry_points
-from tkinter import Listbox
-from tkinter.ttk import Button, Labelframe, Label, Entry
-
-def send_message():
-    pass
-
-def on_contact_select():
-    pass
-
-def clear_chat():
-    pass
-root = tk.Tk()
-root.title("Мессенджер")
-root.geometry("600x600")
+import socket
+import sys
+import threading
 
 
-
-
-chat = tk.Text(root,height=30,width=35)
-contact_list = tk.Listbox(root,width=20,height=25)
-contact_list.insert(tk.END,"Пользователь 1","Тони Старк")
-contact_list.bind("<<ListboxSelect>>" , on_contact_select())
-send_at_label = tk.Label(root,text="Выбирете пользователя")
-bottom_frame = tk.Frame(root)
-entry = tk.Entry(bottom_frame,width=60)
-send_btn = tk.Button(bottom_frame,text="Отправить")
-
-
-
-#Разметка
-
-chat.grid(row=0,column=1)
-contact_list.grid(row = 0,column = 0)
-bottom_frame.grid(row=1,column=1)
-entry.pack()
-send_btn.pack()
-entry.focus()
-root.grid
+def receive_messenge(client_socket):
+    try:
+        while True:
+            data = client_socket.recv(1024)
+            if not data:
+                print(f"\nСоединение с сервером разорвано")
+                break
+            messenge = data.decode('utf-8')
+            print(f"\n[Новое сообщение] {messenge}")
+            print("> ",end="",flush=True)
+    except:
+        print("Ошибка при получении сообщения")
+    finally:
+        client_socket.close()
+        sys.exit(0)
 
 
 
@@ -46,8 +26,37 @@ root.grid
 
 
 
+def main():
+    HOST = "127.0.0.1"
+    PORT = 1234
+    client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+ 
+    print(f"Подлючение к серверу {HOST}:{PORT}")
+
+    client_socket.connect((HOST,PORT))
+
+    recv_thread = threading.Thread(target=receive_messenge,args=(client_socket,))
+    recv_thread.daemon = True
+    recv_thread.start()
+
+    try:
+        while True :
+            messege = input("Введите сообщение:")
+            if not messege:
+                continue
+            if messege.lower() == "/quit":
+                break
+    
+            client_socket.send(messege.encode("utf-8"))
+            # response = client_socket.recv(1024)
+            # print(f"Ответ сервера:{response.decode("utf-8")}")
+    except KeyboardInterrupt:
+        print("Завершение клиента")
+    finally:
+        socket.close(1)
+        client_socket.close()
+        print("Клиент завершил работу")
 
 
 
-
-root.mainloop()
+main()  

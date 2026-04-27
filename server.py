@@ -1,21 +1,44 @@
 import socket
 import threading
 
+active_clients = []
+clients_lock = threading.Lock()
+
+
+def broadcast(messenge,sender_socket=None):
+    with clients_lock:
+        for client_socket in active_clients:
+            if client_socket != sender_socket:
+                try:
+                    client_socket.send(messenge.endcode('utf-8'))
+                except Exception as e:
+                    print(f"Не удалось отправить сообщение клиенту {e}")
 
 
 def handle_clients( client_address,client_socket):
     print(f"Клиент {client_address} подключился")
+
+
+    with clients_lock:
+        active_clients.append(client_socket)
+
+
     try:
-    
         while True :
             data = client_socket.recv(1024)
             if not data:
                 break
-            print(f"Получено:{data.decode("utf-8")}")
+            messenge = data.decode("utf-8")
+            print(f"Количество потоков {threading.active_count()}")
+            print(f"Сообщение от {client_address}: {messenge}")
+            broadcast(messenge,sender_socket=client_socket)
             client_socket.send(data)
     except ConnectionResetError:
         print("Произошла ошибка")
     finally:
+        with clients_lock:
+            if client_socket in active_clients:
+                active_clients.remove(client_socket)
         client_socket.close()
 
 
