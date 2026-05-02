@@ -10,7 +10,7 @@ def broadcast(messenge,sender_socket=None):
         for client_socket in active_clients:
             if client_socket != sender_socket:
                 try:
-                    client_socket.send(messenge.endcode('utf-8'))
+                    client_socket.send(messenge.encode('utf-8'))
                 except Exception as e:
                     print(f"Не удалось отправить сообщение клиенту {e}")
 
@@ -32,7 +32,7 @@ def handle_clients( client_address,client_socket):
             print(f"Количество потоков {threading.active_count()}")
             print(f"Сообщение от {client_address}: {messenge}")
             broadcast(messenge,sender_socket=client_socket)
-            client_socket.send(data)
+            
     except ConnectionResetError:
         print("Произошла ошибка")
     finally:
@@ -53,7 +53,7 @@ def main():
 
 
     server.bind((HOST,PORT))
-    server.listen(1)
+    server.listen(5)
     print(f"Эхо сервер запущен на {HOST}:{PORT}")
     try:
         while True:
@@ -63,7 +63,7 @@ def main():
     except  KeyboardInterrupt: 
         print("Получен сигнал остановки")
     finally:         
-        socket.close()
+        server.close()
 
     
 
