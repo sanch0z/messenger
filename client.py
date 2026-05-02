@@ -53,7 +53,6 @@ def main():
     except KeyboardInterrupt:
         print("Завершение клиента")
     finally:
-        socket.close(1)
         client_socket.close()
         print("Клиент завершил работу")
 
