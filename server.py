@@ -2,15 +2,18 @@ import socket
 import threading
 
 active_clients = []
+users = {}
 clients_lock = threading.Lock()
 users = {}
 user_lock = threading.Lock()
 
 def broadcast(text,sender_socket=None):
+def broadcast(text,sender_socket=None):
     with clients_lock:
         for client_socket in active_clients:
             if client_socket != sender_socket:
                 try:
+                    client_socket.send(text.encode('utf-8'))
                     client_socket.send(text.encode('utf-8'))
                 except Exception as e:
                     print(f"Не удалось отправить сообщение клиенту {e}")
@@ -39,6 +42,7 @@ def handle_clients( client_address,client_socket):
 
 
     try:
+        client_socket.send("Сначала авторизуйтесь (/login))")
         while True :
             data = client_socket.recv(1024)
             if not data:
@@ -83,6 +87,9 @@ def handle_clients( client_address,client_socket):
             print(f"Сообщение от {client_address}: {text}")
             broadcast(text,sender_socket=client_socket)
             
+            print(f"Сообщение от {client_address}: {text}")
+            broadcast(text,sender_socket=client_socket)
+            
     except ConnectionResetError:
         print("Произошла ошибка")
     finally:
@@ -98,6 +105,7 @@ def handle_clients( client_address,client_socket):
 
 
 
+
 def main():
     HOST = "127.0.0.1"
     PORT = 1234
@@ -107,6 +115,7 @@ def main():
 
 
     server.bind((HOST,PORT))
+    server.listen(5)
     server.listen(5)
     print(f"Эхо сервер запущен на {HOST}:{PORT}")
     try:
@@ -119,6 +128,7 @@ def main():
     except:
         print("Ошибка")
     finally:         
+        server.close()
         server.close()
 
     
