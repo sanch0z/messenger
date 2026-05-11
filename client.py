@@ -10,7 +10,7 @@ def receive_messenge(client_socket):
             if not data:
                 print(f"\nСоединение с сервером разорвано")
                 break
-            messenge = data.decode('utf-8')
+            messenge = data.decode('utf-8').rstrip()
             print(f"\n[Новое сообщение] {messenge}")
             print("> ",end="",flush=True)
     except:
@@ -31,9 +31,13 @@ def main():
     PORT = 1234
     client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
  
-    print(f"Подлючение к серверу {HOST}:{PORT}")
-
-    client_socket.connect((HOST,PORT))
+    
+    try:
+        client_socket.connect((HOST,PORT))
+        print(f"Подлючение к серверу {HOST}:{PORT}")
+        print(f"Введите /login для регистрации")
+    except :
+        print("ERR: Не удалось подключиться к серверу")
 
     recv_thread = threading.Thread(target=receive_messenge,args=(client_socket,))
     recv_thread.daemon = True
@@ -48,12 +52,10 @@ def main():
                 break
     
             client_socket.send(messege.encode("utf-8"))
-            # response = client_socket.recv(1024)
-            # print(f"Ответ сервера:{response.decode("utf-8")}")
     except KeyboardInterrupt:
         print("Завершение клиента")
+        client_socket.send(b"/logout")
     finally:
-        socket.close(1)
         client_socket.close()
         print("Клиент завершил работу")
 
