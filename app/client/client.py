@@ -20,12 +20,6 @@ def receive_messenge(client_socket):
         sys.exit(0)
 
 
-
-
-
-
-
-
 def main():
     HOST = "127.0.0.1"
     PORT = 1234
@@ -49,6 +43,7 @@ def main():
             if not messege:
                 continue
             if messege.lower() == "/quit":
+                client_socket.send(b"/logout")
                 break
     
             client_socket.send(messege.encode("utf-8"))
@@ -61,4 +56,5 @@ def main():
 
 
 
-main()  
+if __name__ == "__main__":
+    main()
