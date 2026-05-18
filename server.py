@@ -7,7 +7,7 @@ clients_lock = threading.Lock()
 users = {}
 user_lock = threading.Lock()
 
-def broadcast(text,sender_socket=None):
+
 def broadcast(text,sender_socket=None):
     with clients_lock:
         for client_socket in active_clients:
